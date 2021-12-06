@@ -1,9 +1,12 @@
 require('dotenv').config()
 require('../database/database')
 const express = require ('express')
+const {createRole} = require('../libs/initialSetup')
 const app = express()
-const productsRoute = require('../routes/products.routes')
+createRole()
 
+const productsRoute = require('../routes/products.routes')
+const authRoute = require('../routes/auth.routes')
 const port = process.env.PORT 
 
 
@@ -16,6 +19,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/products', productsRoute)
+app.use('/api/products', productsRoute)
+app.use('/api/auth', authRoute)
 
 app.listen(port, () => console.log(`Estamos escuchando el pureto ${port}`))
