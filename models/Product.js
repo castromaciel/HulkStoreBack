@@ -5,7 +5,8 @@ const productSchema = new Schema(
     name: String,
     price: Number,
     imgURL: String,
-    stock: Number
+    stock: Number,
+    quantity: 0
   }
 )
 
