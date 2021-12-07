@@ -6,7 +6,8 @@ const getProducts = async (req,res) => {
 }
 
 const postProduct = async (req,res) =>{
-  const newProduct = new Product(req.body)
+  let newProduct = new Product(req.body)
+  newProduct.quantity = 0
   const productSaved = await newProduct.save()
   res.status(201).json(productSaved)
 }
