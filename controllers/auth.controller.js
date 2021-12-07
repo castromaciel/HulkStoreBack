@@ -1,19 +1,16 @@
 require('dotenv').config()
+const { validationResult } = require('express-validator')
 const User = require('../models/User')
 const Role = require('../models/Role')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
 const signUp = async (req,res) => {
+  const errors = validationResult(req)
+  if(!errors.isEmpty()) return res.status(400).json({errors: errors.array()})
+
   const {username, email, password, roles} = req.body
-
-  // const userFound = User.find({email})
-
-  const newUser = new User({
-    username,
-    email,
-    password
-  })
+  const newUser = new User({ username, email, password })
 
   const salt = bcrypt.genSaltSync()
   newUser.password = bcrypt.hashSync(password, salt)
@@ -37,11 +34,11 @@ const signIn = async (req,res) => {
   if(!userFound) return res.status(400).json({msg:"User not found"})
   
   const matchPassword = bcrypt.compareSync(req.body.password, userFound.password)
-
   if(!matchPassword) return res.status(401).json({msg:'Wrong user', token: null})
-
+  
   const token = jwt.sign({id: userFound._id}, process.env.SECRET, {expiresIn: 86400})
-  res.json({token})
+  userFound.password = null
+  res.json({token, userFound})
 }
 
 module.exports = { signUp, signIn }
